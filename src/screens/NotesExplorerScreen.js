@@ -15,7 +15,17 @@ import {
 } from '../data/notes';
 import { playNote } from '../utils/audio';
 
-// Sharp notes that get a darker accent colour
+const COLORS = {
+  background: '#0F0F0F',
+  card: '#1A1A1A',
+  cardBorder: '#2A2A2A',
+  secondary: '#3D3D3D',
+  primary: '#DC143C',
+  text: '#F5F5F5',
+  textSecondary: '#999999',
+  textMuted: '#555555',
+};
+
 const SHARP_NOTES = new Set(['F#', 'G#', 'A#', 'C#', 'D#']);
 
 export default function NotesExplorerScreen({ goBack }) {
@@ -30,9 +40,8 @@ export default function NotesExplorerScreen({ goBack }) {
     playNote(freq);
   };
 
-  // Cell width is determined by available space / number of columns (frets + label)
   const containerWidth = Math.min(width, 520);
-  const totalCols = FRET_COUNT + 1; // 1 label + 13 fret columns (0-12)
+  const totalCols = FRET_COUNT + 1;
   const cellW = Math.floor((containerWidth - 32) / totalCols);
   const cellH = cellW > 32 ? cellW : 36;
 
@@ -51,7 +60,6 @@ export default function NotesExplorerScreen({ goBack }) {
         )}
       </View>
 
-      {/* Fret number header row */}
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         <View>
           {/* Fret numbers */}
@@ -67,17 +75,11 @@ export default function NotesExplorerScreen({ goBack }) {
             ))}
           </View>
 
-          {/* One row per string (low E → high e) */}
           {STRING_LABELS.map((label, sIdx) => (
             <View key={sIdx} style={styles.row}>
-              {/* String label */}
-              <View
-                style={[styles.labelCell, { width: cellW, height: cellH }]}
-              >
+              <View style={[styles.labelCell, { width: cellW, height: cellH }]}>
                 <Text style={styles.stringLabel}>{label}</Text>
               </View>
-
-              {/* Fret cells */}
               {Array.from({ length: FRET_COUNT }, (_, f) => {
                 const note = getFretNote(sIdx, f);
                 const isSharp = SHARP_NOTES.has(note);
@@ -93,10 +95,7 @@ export default function NotesExplorerScreen({ goBack }) {
                     activeOpacity={0.6}
                   >
                     <Text
-                      style={[
-                        styles.noteText,
-                        isSharp && styles.noteTextSharp,
-                      ]}
+                      style={[styles.noteText, isSharp && styles.noteTextSharp]}
                     >
                       {note}
                     </Text>
@@ -106,19 +105,14 @@ export default function NotesExplorerScreen({ goBack }) {
             </View>
           ))}
 
-          {/* Fret markers (3, 5, 7, 9, 12) */}
+          {/* Fret markers */}
           <View style={styles.row}>
             <View style={[styles.labelCell, { width: cellW, height: 20 }]} />
             {Array.from({ length: FRET_COUNT }, (_, f) => {
               const marker = [3, 5, 7, 9, 12].includes(f);
               return (
-                <View
-                  key={f}
-                  style={[styles.markerCell, { width: cellW, height: 20 }]}
-                >
-                  {marker && (
-                    <View style={styles.markerDot} />
-                  )}
+                <View key={f} style={[styles.markerCell, { width: cellW, height: 20 }]}>
+                  {marker && <View style={styles.markerDot} />}
                 </View>
               );
             })}
@@ -126,9 +120,7 @@ export default function NotesExplorerScreen({ goBack }) {
         </View>
       </ScrollView>
 
-      <Text style={styles.footer}>
-        🔊 Tap any note to play its sound
-      </Text>
+      <Text style={styles.footer}>🔊 Tap any note to play its sound</Text>
     </View>
   );
 }
@@ -137,7 +129,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: '100%',
-    backgroundColor: '#0d0d1a',
+    backgroundColor: COLORS.background,
     alignSelf: 'center',
   },
   containerWide: {
@@ -154,25 +146,25 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   backText: {
-    color: '#f0e68c',
+    color: COLORS.primary,
     fontSize: 16,
     fontWeight: '600',
   },
   title: {
     fontSize: 26,
     fontWeight: '800',
-    color: '#f0e68c',
+    color: COLORS.text,
     textAlign: 'center',
   },
   hint: {
     fontSize: 13,
-    color: '#6666aa',
+    color: COLORS.textSecondary,
     marginTop: 6,
   },
   lastNote: {
     fontSize: 22,
     fontWeight: '800',
-    color: '#2ecc71',
+    color: COLORS.primary,
     marginTop: 6,
   },
   row: {
@@ -181,42 +173,42 @@ const styles = StyleSheet.create({
   labelCell: {
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#1a1a2e',
+    backgroundColor: COLORS.card,
     borderRightWidth: 2,
-    borderColor: '#2a2a4a',
+    borderColor: COLORS.cardBorder,
   },
   stringLabel: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: '700',
-    color: '#f0e68c',
+    color: COLORS.primary,
   },
   fretHeader: {
     alignItems: 'center',
     justifyContent: 'center',
     borderBottomWidth: 1,
-    borderColor: '#2a2a4a',
+    borderColor: COLORS.cardBorder,
   },
   fretNum: {
     fontSize: 10,
-    color: '#555577',
+    color: COLORS.textMuted,
   },
   noteCell: {
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 0.5,
-    borderColor: '#1e1e3a',
-    backgroundColor: '#14142a',
+    borderColor: '#222222',
+    backgroundColor: '#111111',
   },
   noteCellSharp: {
-    backgroundColor: '#0e0e22',
+    backgroundColor: '#0A0A0A',
   },
   noteText: {
     fontSize: 11,
     fontWeight: '600',
-    color: '#a8a8cc',
+    color: '#777777',
   },
   noteTextSharp: {
-    color: '#7777aa',
+    color: '#555555',
   },
   markerCell: {
     alignItems: 'center',
@@ -226,11 +218,11 @@ const styles = StyleSheet.create({
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: '#f0e68c',
+    backgroundColor: COLORS.primary,
   },
   footer: {
     textAlign: 'center',
-    color: '#444466',
+    color: COLORS.textMuted,
     fontSize: 12,
     paddingVertical: 12,
   },

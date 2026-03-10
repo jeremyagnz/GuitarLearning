@@ -8,6 +8,17 @@ import {
   useWindowDimensions,
 } from 'react-native';
 
+const COLORS = {
+  background: '#0F0F0F',
+  card: '#1A1A1A',
+  cardBorder: '#2A2A2A',
+  secondary: '#3D3D3D',
+  primary: '#DC143C',
+  text: '#F5F5F5',
+  textSecondary: '#999999',
+  textMuted: '#555555',
+};
+
 const CARDS = [
   {
     screen: 'NotesExplorer',
@@ -24,14 +35,20 @@ const CARDS = [
   {
     screen: 'Fretboard',
     icon: '🎸',
-    title: 'Fretboard',
-    subtitle: 'Ver todas las notas en el mástil',
+    title: 'Fretboard Explorer',
+    subtitle: 'Resalta notas y acordes en el mástil',
   },
   {
     screen: 'PracticeMode',
     icon: '🎧',
     title: 'Practice Mode',
     subtitle: 'Entrenamiento de acordes',
+  },
+  {
+    screen: 'PitchDetector',
+    icon: '🎤',
+    title: 'Pitch Detector',
+    subtitle: 'Toca y la app identifica tu nota',
   },
 ];
 
@@ -70,7 +87,6 @@ export default function HomeScreen({ navigate }) {
           ))}
         </View>
 
-        {/* Decorative rule */}
         <View style={styles.divider} />
         <Text style={styles.footer}>Guitar Trainer v1.0</Text>
       </ScrollView>
@@ -82,7 +98,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: '100%',
-    backgroundColor: '#0d0d1a',
+    backgroundColor: COLORS.background,
     alignSelf: 'center',
   },
   containerWide: {
@@ -100,63 +116,63 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 34,
     fontWeight: '900',
-    color: '#f0e68c',
+    color: COLORS.text,
     letterSpacing: 1.5,
     textAlign: 'center',
   },
   subtitle: {
     fontSize: 14,
-    color: '#8888aa',
+    color: COLORS.textSecondary,
     marginTop: 6,
     textAlign: 'center',
   },
   cards: {
     paddingHorizontal: 20,
-    gap: 14,
+    gap: 12,
   },
   card: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#1a1a2e',
+    backgroundColor: COLORS.card,
     borderRadius: 16,
     paddingVertical: 18,
     paddingHorizontal: 20,
     borderWidth: 1,
-    borderColor: '#2a2a4a',
+    borderColor: COLORS.cardBorder,
   },
   cardIcon: {
-    fontSize: 32,
+    fontSize: 30,
     marginRight: 16,
   },
   cardText: {
     flex: 1,
   },
   cardTitle: {
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: '700',
-    color: '#e8e8f0',
+    color: COLORS.text,
     marginBottom: 3,
   },
   cardSubtitle: {
-    fontSize: 13,
-    color: '#7777aa',
+    fontSize: 12,
+    color: COLORS.textSecondary,
   },
   cardArrow: {
-    fontSize: 28,
-    color: '#f0e68c',
+    fontSize: 26,
+    color: COLORS.primary,
     fontWeight: '300',
     marginLeft: 8,
   },
   divider: {
     height: 1,
-    backgroundColor: '#1e1e3a',
+    backgroundColor: COLORS.cardBorder,
     marginHorizontal: 24,
-    marginTop: 36,
-    marginBottom: 16,
+    marginTop: 32,
+    marginBottom: 14,
   },
   footer: {
     textAlign: 'center',
-    color: '#3a3a5a',
+    color: COLORS.textMuted,
     fontSize: 12,
   },
 });

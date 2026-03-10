@@ -11,9 +11,21 @@ import ChordDiagram from '../components/ChordDiagram';
 import { OPEN_FREQUENCIES } from '../data/notes';
 import { playChord } from '../utils/audio';
 
-const PRACTICE_CHORDS = CHORDS.filter((c) =>
-  ['Major', 'Minor'].includes(c.category)
-);
+const COLORS = {
+  background: '#0F0F0F',
+  card: '#1A1A1A',
+  cardBorder: '#2A2A2A',
+  secondary: '#3D3D3D',
+  primary: '#DC143C',
+  primaryDark: '#8B0000',
+  text: '#F5F5F5',
+  textSecondary: '#999999',
+  textMuted: '#555555',
+  success: '#22C55E',
+  error: '#EF4444',
+};
+
+const PRACTICE_CHORDS = CHORDS.filter((c) => ['Major', 'Minor'].includes(c.category));
 
 const pickRandom = (arr, exclude) => {
   const pool = arr.filter((c) => c.name !== exclude);
@@ -35,21 +47,17 @@ export default function PracticeModeScreen({ goBack }) {
   const [revealed, setRevealed] = useState(false);
   const [score, setScore] = useState({ correct: 0, total: 0 });
 
-  const next = useCallback(
-    (wasCorrect) => {
-      setScore((s) => ({
-        correct: s.correct + (wasCorrect ? 1 : 0),
-        total: s.total + 1,
-      }));
-      setCurrent((prev) => pickRandom(PRACTICE_CHORDS, prev.name));
-      setRevealed(false);
-    },
-    []
-  );
+  const next = useCallback((wasCorrect) => {
+    setScore((s) => ({
+      correct: s.correct + (wasCorrect ? 1 : 0),
+      total: s.total + 1,
+    }));
+    setCurrent((prev) => pickRandom(PRACTICE_CHORDS, prev.name));
+    setRevealed(false);
+  }, []);
 
   const handlePlay = () => {
-    const freqs = getChordFrequencies(current);
-    playChord(freqs);
+    playChord(getChordFrequencies(current));
   };
 
   return (
@@ -73,7 +81,6 @@ export default function PracticeModeScreen({ goBack }) {
         <Text style={styles.chordName}>{current.name}</Text>
         <Text style={styles.category}>{current.category}</Text>
 
-        {/* Reveal button or diagram */}
         {!revealed ? (
           <TouchableOpacity
             style={styles.revealBtn}
@@ -86,7 +93,6 @@ export default function PracticeModeScreen({ goBack }) {
           <View style={styles.diagramArea}>
             <ChordDiagram chord={current} />
 
-            {/* Notes */}
             <View style={styles.notesRow}>
               {current.notes.map((n) => (
                 <View key={n} style={styles.noteBadge}>
@@ -95,31 +101,25 @@ export default function PracticeModeScreen({ goBack }) {
               ))}
             </View>
 
-            {/* Play sound */}
-            <TouchableOpacity
-              style={styles.playBtn}
-              onPress={handlePlay}
-              activeOpacity={0.7}
-            >
+            <TouchableOpacity style={styles.playBtn} onPress={handlePlay} activeOpacity={0.7}>
               <Text style={styles.playBtnText}>🔊 Play Chord</Text>
             </TouchableOpacity>
 
-            {/* Self-evaluation */}
-            <Text style={styles.evaluateLabel}>Did you get it right?</Text>
+            <Text style={styles.evaluateLabel}>¿Lo tocaste correctamente?</Text>
             <View style={styles.evalRow}>
               <TouchableOpacity
                 style={[styles.evalBtn, styles.evalBtnYes]}
                 onPress={() => next(true)}
                 activeOpacity={0.7}
               >
-                <Text style={styles.evalBtnText}>✅ Yes</Text>
+                <Text style={styles.evalBtnText}>✅ Sí</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.evalBtn, styles.evalBtnNo]}
                 onPress={() => next(false)}
                 activeOpacity={0.7}
               >
-                <Text style={styles.evalBtnText}>❌ Not yet</Text>
+                <Text style={styles.evalBtnText}>❌ No todavía</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -127,7 +127,7 @@ export default function PracticeModeScreen({ goBack }) {
 
         {!revealed && (
           <Text style={styles.hint}>
-            Try playing the chord, then tap Show Diagram to check.
+            Intenta tocar el acorde y luego presiona "Show Diagram" para verificar.
           </Text>
         )}
       </View>
@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: '100%',
-    backgroundColor: '#0d0d1a',
+    backgroundColor: COLORS.background,
     alignSelf: 'center',
   },
   containerWide: {
@@ -156,26 +156,26 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   backText: {
-    color: '#f0e68c',
+    color: COLORS.primary,
     fontSize: 16,
     fontWeight: '600',
   },
   title: {
     fontSize: 26,
     fontWeight: '800',
-    color: '#f0e68c',
+    color: COLORS.text,
   },
   scorePill: {
     marginTop: 10,
-    backgroundColor: '#1a2a1a',
+    backgroundColor: COLORS.card,
     borderRadius: 20,
     paddingHorizontal: 16,
     paddingVertical: 6,
     borderWidth: 1,
-    borderColor: '#2a4a2a',
+    borderColor: COLORS.cardBorder,
   },
   scoreText: {
-    color: '#7eff9e',
+    color: COLORS.success,
     fontWeight: '700',
     fontSize: 14,
   },
@@ -187,30 +187,30 @@ const styles = StyleSheet.create({
   },
   prompt: {
     fontSize: 16,
-    color: '#8888aa',
+    color: COLORS.textSecondary,
     marginBottom: 8,
   },
   chordName: {
     fontSize: 64,
     fontWeight: '900',
-    color: '#f0e68c',
+    color: COLORS.primary,
     letterSpacing: 3,
   },
   category: {
     fontSize: 15,
-    color: '#5555aa',
+    color: COLORS.textMuted,
     marginBottom: 28,
   },
   revealBtn: {
-    backgroundColor: '#1e1e3a',
+    backgroundColor: COLORS.card,
     borderRadius: 14,
     paddingVertical: 16,
     paddingHorizontal: 40,
     borderWidth: 1,
-    borderColor: '#3a3a6a',
+    borderColor: COLORS.cardBorder,
   },
   revealBtnText: {
-    color: '#c0c0e8',
+    color: COLORS.text,
     fontWeight: '700',
     fontSize: 17,
   },
@@ -224,35 +224,33 @@ const styles = StyleSheet.create({
     marginBottom: 14,
   },
   noteBadge: {
-    backgroundColor: '#1e1e3a',
+    backgroundColor: COLORS.card,
     borderRadius: 16,
     paddingHorizontal: 12,
     paddingVertical: 4,
     borderWidth: 1,
-    borderColor: '#3a3a6a',
+    borderColor: COLORS.cardBorder,
   },
   noteBadgeText: {
-    color: '#c0c0e8',
+    color: COLORS.text,
     fontWeight: '700',
     fontSize: 14,
   },
   playBtn: {
-    backgroundColor: '#1a3a2a',
+    backgroundColor: COLORS.primary,
     borderRadius: 12,
     paddingVertical: 12,
     paddingHorizontal: 32,
-    borderWidth: 1,
-    borderColor: '#2a5a3a',
     marginBottom: 20,
   },
   playBtnText: {
-    color: '#7eff9e',
+    color: COLORS.text,
     fontWeight: '700',
     fontSize: 16,
   },
   evaluateLabel: {
     fontSize: 14,
-    color: '#7777aa',
+    color: COLORS.textSecondary,
     marginBottom: 12,
   },
   evalRow: {
@@ -266,21 +264,21 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   evalBtnYes: {
-    backgroundColor: '#1a3a2a',
-    borderColor: '#2a5a3a',
+    backgroundColor: '#052E16',
+    borderColor: COLORS.success,
   },
   evalBtnNo: {
-    backgroundColor: '#3a1a1a',
-    borderColor: '#5a2a2a',
+    backgroundColor: '#2D0000',
+    borderColor: COLORS.error,
   },
   evalBtnText: {
-    color: '#e0e0f0',
+    color: COLORS.text,
     fontWeight: '700',
     fontSize: 15,
   },
   hint: {
     fontSize: 13,
-    color: '#444466',
+    color: COLORS.textMuted,
     textAlign: 'center',
     marginTop: 20,
     maxWidth: 280,

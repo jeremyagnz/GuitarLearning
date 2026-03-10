@@ -11,17 +11,25 @@ import ChordDiagram from '../components/ChordDiagram';
 import { OPEN_FREQUENCIES, STRING_LABELS, getFretNote, FRET_COUNT } from '../data/notes';
 import { playChord } from '../utils/audio';
 
-/** Build the list of frequencies for each sounding string in a chord */
-const getChordFrequencies = (chord) => {
-  return chord.strings
-    .map((fret, i) => {
-      if (fret < 0) return null;
-      return OPEN_FREQUENCIES[i] * Math.pow(2, fret / 12);
-    })
-    .filter(Boolean);
+const COLORS = {
+  background: '#0F0F0F',
+  card: '#1A1A1A',
+  cardBorder: '#2A2A2A',
+  secondary: '#3D3D3D',
+  primary: '#DC143C',
+  primaryDark: '#8B0000',
+  text: '#F5F5F5',
+  textSecondary: '#999999',
+  textMuted: '#555555',
+  success: '#22C55E',
 };
 
-const FRETS_TO_SHOW = FRET_COUNT; // 0..12
+const getChordFrequencies = (chord) =>
+  chord.strings
+    .map((fret, i) => (fret < 0 ? null : OPEN_FREQUENCIES[i] * Math.pow(2, fret / 12)))
+    .filter(Boolean);
+
+const FRETS_TO_SHOW = FRET_COUNT;
 
 export default function ChordDetailScreen({ chord, goBack }) {
   const { width } = useWindowDimensions();
@@ -41,10 +49,7 @@ export default function ChordDetailScreen({ chord, goBack }) {
 
   return (
     <View style={[styles.container, isWide && styles.containerWide]}>
-      <ScrollView
-        contentContainerStyle={styles.scroll}
-        showsVerticalScrollIndicator={false}
-      >
+      <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity onPress={goBack} style={styles.backBtn}>
@@ -73,10 +78,9 @@ export default function ChordDetailScreen({ chord, goBack }) {
           <ChordDiagram chord={chord} />
         </View>
 
-        {/* String / fret text tab */}
+        {/* Tab notation */}
         <View style={styles.tabBox}>
           {STRING_LABELS.slice().reverse().map((label, i) => {
-            // reverse so high e is on top
             const sIdx = 5 - i;
             const fret = chord.strings[sIdx];
             const fretStr = fret < 0 ? 'X' : fret === 0 ? '0' : `${fret}`;
@@ -109,7 +113,6 @@ export default function ChordDetailScreen({ chord, goBack }) {
         <Text style={styles.sectionLabel}>Fretboard View</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <View style={styles.fretboard}>
-            {/* Fret numbers header */}
             <View style={styles.fbRow}>
               <View style={styles.fbLabelCell} />
               {Array.from({ length: FRETS_TO_SHOW }, (_, f) => (
@@ -127,9 +130,7 @@ export default function ChordDetailScreen({ chord, goBack }) {
                 {Array.from({ length: FRETS_TO_SHOW }, (_, f) => {
                   const note = getFretNote(sIdx, f);
                   const isInChord = chordNoteSet.has(note);
-                  // Highlight played frets more prominently
-                  const isPlayed =
-                    chord.strings[sIdx] >= 0 && chord.strings[sIdx] === f;
+                  const isPlayed = chord.strings[sIdx] >= 0 && chord.strings[sIdx] === f;
                   return (
                     <View
                       key={f}
@@ -140,12 +141,7 @@ export default function ChordDetailScreen({ chord, goBack }) {
                       ]}
                     >
                       {(isInChord || isPlayed) && (
-                        <Text
-                          style={[
-                            styles.fbNote,
-                            isPlayed && styles.fbNotePlayed,
-                          ]}
-                        >
+                        <Text style={[styles.fbNote, isPlayed && styles.fbNotePlayed]}>
                           {note}
                         </Text>
                       )}
@@ -157,9 +153,7 @@ export default function ChordDetailScreen({ chord, goBack }) {
           </View>
         </ScrollView>
 
-        <Text style={styles.footer}>
-          {'✕ = muted string   ○ = open string'}
-        </Text>
+        <Text style={styles.footer}>{'✕ = muted string   ○ = open string'}</Text>
       </ScrollView>
     </View>
   );
@@ -169,7 +163,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: '100%',
-    backgroundColor: '#0d0d1a',
+    backgroundColor: COLORS.background,
     alignSelf: 'center',
   },
   containerWide: {
@@ -189,14 +183,14 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   backText: {
-    color: '#f0e68c',
+    color: COLORS.primary,
     fontSize: 16,
     fontWeight: '600',
   },
   screenTitle: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#8888aa',
+    color: COLORS.textSecondary,
   },
   chordHeader: {
     alignItems: 'center',
@@ -206,12 +200,12 @@ const styles = StyleSheet.create({
   chordName: {
     fontSize: 42,
     fontWeight: '900',
-    color: '#f0e68c',
+    color: COLORS.primary,
     letterSpacing: 2,
   },
   category: {
     fontSize: 14,
-    color: '#6666aa',
+    color: COLORS.textSecondary,
     marginTop: 2,
   },
   notesRow: {
@@ -222,15 +216,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   noteBadge: {
-    backgroundColor: '#1e1e3a',
+    backgroundColor: COLORS.card,
     borderRadius: 20,
     paddingHorizontal: 14,
     paddingVertical: 6,
     borderWidth: 1,
-    borderColor: '#3a3a6a',
+    borderColor: COLORS.cardBorder,
   },
   noteBadgeText: {
-    color: '#c0c0e8',
+    color: COLORS.text,
     fontWeight: '700',
     fontSize: 15,
   },
@@ -239,13 +233,13 @@ const styles = StyleSheet.create({
     marginVertical: 8,
   },
   tabBox: {
-    backgroundColor: '#111122',
+    backgroundColor: COLORS.card,
     marginHorizontal: 20,
     borderRadius: 12,
     padding: 14,
     marginBottom: 20,
     borderWidth: 1,
-    borderColor: '#2a2a4a',
+    borderColor: COLORS.cardBorder,
   },
   tabRow: {
     flexDirection: 'row',
@@ -255,41 +249,39 @@ const styles = StyleSheet.create({
   tabLabel: {
     width: 14,
     fontSize: 12,
-    color: '#f0e68c',
+    color: COLORS.primary,
     fontWeight: '700',
     fontFamily: 'monospace',
   },
   tabPipe: {
     fontSize: 12,
-    color: '#555577',
+    color: COLORS.textMuted,
     fontFamily: 'monospace',
   },
   tabFrets: {
     fontSize: 12,
-    color: '#555577',
+    color: COLORS.textMuted,
     fontFamily: 'monospace',
   },
   tabFretNum: {
     fontSize: 12,
-    color: '#a0a0cc',
+    color: COLORS.text,
     fontFamily: 'monospace',
     fontWeight: '700',
   },
   playBtn: {
     marginHorizontal: 20,
-    backgroundColor: '#2a6f3a',
+    backgroundColor: COLORS.primary,
     borderRadius: 14,
     paddingVertical: 16,
     alignItems: 'center',
     marginBottom: 28,
-    borderWidth: 1,
-    borderColor: '#3a8f4a',
   },
   playBtnActive: {
-    backgroundColor: '#1a4f2a',
+    backgroundColor: COLORS.primaryDark,
   },
   playBtnText: {
-    color: '#7eff9e',
+    color: COLORS.text,
     fontWeight: '800',
     fontSize: 18,
     letterSpacing: 0.5,
@@ -297,7 +289,7 @@ const styles = StyleSheet.create({
   sectionLabel: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#8888aa',
+    color: COLORS.textSecondary,
     paddingHorizontal: 20,
     marginBottom: 10,
   },
@@ -313,12 +305,12 @@ const styles = StyleSheet.create({
     height: 32,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#1a1a2e',
+    backgroundColor: COLORS.card,
   },
   fbLabel: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#f0e68c',
+    color: COLORS.primary,
   },
   fbFretHeader: {
     width: 32,
@@ -328,7 +320,7 @@ const styles = StyleSheet.create({
   },
   fbFretNum: {
     fontSize: 9,
-    color: '#444466',
+    color: COLORS.textMuted,
   },
   fbCell: {
     width: 32,
@@ -336,29 +328,29 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 0.5,
-    borderColor: '#1e1e3a',
-    backgroundColor: '#111120',
+    borderColor: '#222222',
+    backgroundColor: '#111111',
   },
   fbCellHighlight: {
-    backgroundColor: '#1a2a3a',
+    backgroundColor: '#3A0000',
   },
   fbCellPlayed: {
-    backgroundColor: '#2a4a2a',
-    borderColor: '#3a6a3a',
+    backgroundColor: COLORS.primary,
+    borderColor: COLORS.primaryDark,
   },
   fbNote: {
     fontSize: 9,
     fontWeight: '600',
-    color: '#5588aa',
+    color: '#CC4444',
   },
   fbNotePlayed: {
     fontSize: 10,
     fontWeight: '800',
-    color: '#7eff9e',
+    color: COLORS.text,
   },
   footer: {
     textAlign: 'center',
-    color: '#3a3a5a',
+    color: COLORS.textMuted,
     fontSize: 12,
     paddingTop: 16,
     paddingHorizontal: 20,

@@ -8,6 +8,7 @@ import ChordLibraryScreen from './src/screens/ChordLibraryScreen';
 import ChordDetailScreen from './src/screens/ChordDetailScreen';
 import FretboardScreen from './src/screens/FretboardScreen';
 import PracticeModeScreen from './src/screens/PracticeModeScreen';
+import PitchDetectorScreen from './src/screens/PitchDetectorScreen';
 
 /**
  * Simple stack-based navigator implemented with React state.
@@ -40,6 +41,8 @@ export default function App() {
         return <FretboardScreen goBack={goBack} />;
       case 'PracticeMode':
         return <PracticeModeScreen goBack={goBack} />;
+      case 'PitchDetector':
+        return <PitchDetectorScreen goBack={goBack} />;
       default:
         return <HomeScreen navigate={navigate} />;
     }
@@ -56,7 +59,7 @@ export default function App() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#0d0d1a',
+    backgroundColor: '#0F0F0F',
     alignItems: 'center',
   },
 });
