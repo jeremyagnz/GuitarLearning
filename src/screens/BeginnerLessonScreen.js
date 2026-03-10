@@ -277,7 +277,7 @@ export default function BeginnerLessonScreen({ navigate, goBack }) {
         {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity onPress={goBack} style={styles.backBtn}>
-            <Text style={styles.backText}>‹ Back</Text>
+            <Text style={styles.backText}>‹ Atrás</Text>
           </TouchableOpacity>
           <Text style={styles.screenTitle}>📚 Lecciones para Principiantes</Text>
           <Text style={styles.screenSubtitle}>
