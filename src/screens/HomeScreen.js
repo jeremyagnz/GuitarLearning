@@ -21,6 +21,12 @@ const COLORS = {
 
 const CARDS = [
   {
+    screen: 'BeginnerLesson',
+    icon: '📚',
+    title: 'Lecciones para Principiantes',
+    subtitle: 'Notas, cuerdas y acordes desde cero',
+  },
+  {
     screen: 'NotesExplorer',
     icon: '🎵',
     title: 'Notes Explorer',

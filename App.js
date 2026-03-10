@@ -9,6 +9,7 @@ import ChordDetailScreen from './src/screens/ChordDetailScreen';
 import FretboardScreen from './src/screens/FretboardScreen';
 import PracticeModeScreen from './src/screens/PracticeModeScreen';
 import PitchDetectorScreen from './src/screens/PitchDetectorScreen';
+import BeginnerLessonScreen from './src/screens/BeginnerLessonScreen';
 
 /**
  * Simple stack-based navigator implemented with React state.
@@ -41,6 +42,8 @@ export default function App() {
         return <FretboardScreen goBack={goBack} />;
       case 'PracticeMode':
         return <PracticeModeScreen goBack={goBack} />;
+      case 'BeginnerLesson':
+        return <BeginnerLessonScreen navigate={navigate} goBack={goBack} />;
       case 'PitchDetector':
         return <PitchDetectorScreen goBack={goBack} />;
       default:

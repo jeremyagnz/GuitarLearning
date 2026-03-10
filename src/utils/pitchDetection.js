@@ -32,12 +32,12 @@ export const autoCorrelate = (buf, sampleRate) => {
   let rms = 0;
   for (let i = 0; i < SIZE; i++) rms += buf[i] * buf[i];
   rms = Math.sqrt(rms / SIZE);
-  if (rms < 0.01) return -1;
+  if (rms < 0.005) return -1; // was 0.01 – mobile mics can have lower amplitude
 
   // Trim leading / trailing silence to reduce noise
   let start = 0;
   let end = SIZE - 1;
-  const TRIM_THRESHOLD = 0.2;
+  const TRIM_THRESHOLD = 0.08; // was 0.2 – lower so mobile mic signals aren't over-trimmed
   for (let i = 0; i < SIZE / 2; i++) {
     if (Math.abs(buf[i]) >= TRIM_THRESHOLD) { start = i; break; }
   }

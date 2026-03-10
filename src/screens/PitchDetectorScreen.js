@@ -85,17 +85,41 @@ export default function PitchDetectorScreen({ goBack }) {
     }
     try {
       setError(null);
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+      // Disable browser audio processing so the raw guitar signal reaches the analyser.
+      // On mobile (iOS Safari, Chrome Android) these are ON by default and distort pitch.
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: false,
+          noiseSuppression: false,
+          autoGainControl: false,
+          channelCount: 1,
+        },
+      });
       streamRef.current = stream;
 
       const AudioContext = window.AudioContext || window.webkitAudioContext;
       audioCtxRef.current = new AudioContext();
 
+      // iOS Safari starts AudioContext in 'suspended' state even after a user gesture.
+      // Explicitly resume so the audio graph actually processes data.
+      if (audioCtxRef.current.state === 'suspended') {
+        await audioCtxRef.current.resume();
+      }
+
       const source = audioCtxRef.current.createMediaStreamSource(stream);
       const analyser = audioCtxRef.current.createAnalyser();
-      analyser.fftSize = 2048;
-      analyser.smoothingTimeConstant = 0.3;
+      analyser.fftSize = 4096; // larger buffer → better low-frequency resolution
+      analyser.smoothingTimeConstant = 0.1;
       source.connect(analyser);
+
+      // Some mobile browsers only keep the audio graph alive when it has an active output.
+      // Connect through a silent (gain=0) node to destination to ensure processing happens.
+      const silentGain = audioCtxRef.current.createGain();
+      silentGain.gain.value = 0;
+      analyser.connect(silentGain);
+      silentGain.connect(audioCtxRef.current.destination);
+
       analyserRef.current = analyser;
 
       listeningRef.current = true;
