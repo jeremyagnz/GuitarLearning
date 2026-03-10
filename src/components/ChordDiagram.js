@@ -1,9 +1,17 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
+const COLORS = {
+  primary: '#DC143C',
+  text: '#F5F5F5',
+  textMuted: '#888888',
+  card: '#1A1A1A',
+  error: '#EF4444',
+  success: '#22C55E',
+};
+
 const FRETS = 5;
 const STRINGS = 6;
-
 const STRING_LABELS = ['E', 'A', 'D', 'G', 'B', 'e'];
 
 /**
@@ -15,7 +23,6 @@ export default function ChordDiagram({ chord }) {
 
   const { strings, fingers, barre } = chord;
 
-  // Determine the lowest fret pressed (ignore 0 and -1)
   const pressedFrets = strings.filter((f) => f > 0);
   const minFret = pressedFrets.length > 0 ? Math.min(...pressedFrets) : 1;
   const startFret = minFret > 1 ? minFret : 1;
@@ -25,34 +32,24 @@ export default function ChordDiagram({ chord }) {
     return strings[stringIndex] === absoluteFret;
   };
 
-  const isBarreAt = (fret) => {
-    if (!barre) return false;
-    const absoluteFret = fret + startFret - 1;
-    return barre.fret === absoluteFret;
-  };
-
   const barreCoveredAt = (stringIndex, fret) => {
     if (!barre) return false;
     const absoluteFret = fret + startFret - 1;
     if (barre.fret !== absoluteFret) return false;
-    const sIdx = stringIndex + 1; // 1-based
+    const sIdx = stringIndex + 1;
     return sIdx >= barre.from && sIdx <= barre.to;
   };
 
   return (
     <View style={styles.container}>
-      {/* Chord name */}
       <Text style={styles.chordName}>{chord.name}</Text>
 
-      {/* Fret position label */}
       {startFret > 1 && (
         <Text style={styles.fretLabel}>{startFret}fr</Text>
       )}
 
-      {/* Nut / top border */}
       <View style={styles.nut} />
 
-      {/* String labels + mute/open indicators */}
       <View style={styles.topRow}>
         {strings.map((fret, i) => (
           <View key={i} style={styles.stringLabelCell}>
@@ -67,44 +64,33 @@ export default function ChordDiagram({ chord }) {
         ))}
       </View>
 
-      {/* Fretboard grid */}
       <View style={styles.fretboard}>
-        {/* Vertical string lines */}
         {Array.from({ length: STRINGS }).map((_, si) => (
           <View
             key={`string-${si}`}
-            style={[
-              styles.stringLine,
-              { left: `${(si / (STRINGS - 1)) * 100}%` },
-            ]}
+            style={[styles.stringLine, { left: `${(si / (STRINGS - 1)) * 100}%` }]}
           />
         ))}
 
-        {/* Horizontal fret lines */}
         {Array.from({ length: FRETS + 1 }).map((_, fi) => (
           <View
             key={`fret-${fi}`}
-            style={[
-              styles.fretLine,
-              { top: `${(fi / FRETS) * 100}%` },
-            ]}
+            style={[styles.fretLine, { top: `${(fi / FRETS) * 100}%` }]}
           />
         ))}
 
-        {/* Barre chord bar */}
         {barre && (() => {
           const fretRow = barre.fret - startFret;
           if (fretRow < 0 || fretRow >= FRETS) return null;
           const fromPct = ((barre.from - 1) / (STRINGS - 1)) * 100;
           const toPct = ((barre.to - 1) / (STRINGS - 1)) * 100;
-          const top = `${((fretRow + 0.5) / FRETS) * 100}%`;
           return (
             <View
               key="barre"
               style={[
                 styles.barre,
                 {
-                  top,
+                  top: `${((fretRow + 0.5) / FRETS) * 100}%`,
                   left: `${fromPct}%`,
                   right: `${100 - toPct}%`,
                 },
@@ -113,7 +99,6 @@ export default function ChordDiagram({ chord }) {
           );
         })()}
 
-        {/* Finger dots */}
         {Array.from({ length: FRETS }).map((_, fi) =>
           Array.from({ length: STRINGS }).map((_, si) => {
             if (!isFretPressed(si, fi + 1)) return null;
@@ -134,7 +119,6 @@ export default function ChordDiagram({ chord }) {
         )}
       </View>
 
-      {/* Bottom string labels */}
       <View style={styles.bottomRow}>
         {STRING_LABELS.map((label, i) => (
           <View key={i} style={styles.stringLabelCell}>
@@ -158,18 +142,18 @@ const styles = StyleSheet.create({
   chordName: {
     fontSize: 28,
     fontWeight: '700',
-    color: '#f0e68c',
+    color: COLORS.primary,
     marginBottom: 4,
   },
   fretLabel: {
     fontSize: 12,
-    color: '#aaa',
+    color: COLORS.textMuted,
     marginBottom: 4,
   },
   nut: {
     width: BOARD_WIDTH + 4,
     height: 6,
-    backgroundColor: '#f0e68c',
+    backgroundColor: COLORS.primary,
     borderRadius: 3,
     marginBottom: 0,
   },
@@ -192,16 +176,16 @@ const styles = StyleSheet.create({
   },
   stringLabelText: {
     fontSize: 12,
-    color: '#aaa',
+    color: COLORS.textMuted,
   },
   muteSymbol: {
     fontSize: 14,
-    color: '#e74c3c',
+    color: COLORS.error,
     fontWeight: '700',
   },
   openSymbol: {
     fontSize: 14,
-    color: '#2ecc71',
+    color: COLORS.success,
     fontWeight: '700',
   },
   fretboard: {
@@ -215,7 +199,7 @@ const styles = StyleSheet.create({
     top: 0,
     bottom: 0,
     width: 2,
-    backgroundColor: '#888',
+    backgroundColor: '#555555',
     transform: [{ translateX: -1 }],
   },
   fretLine: {
@@ -223,21 +207,21 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 1,
-    backgroundColor: '#555',
+    backgroundColor: '#333333',
   },
   dot: {
     position: 'absolute',
     width: 24,
     height: 24,
     borderRadius: 12,
-    backgroundColor: '#f0e68c',
+    backgroundColor: COLORS.primary,
     transform: [{ translateX: -12 }, { translateY: -12 }],
   },
   barre: {
     position: 'absolute',
     height: 24,
     borderRadius: 12,
-    backgroundColor: '#f0e68c',
+    backgroundColor: COLORS.primary,
     transform: [{ translateY: -12 }],
   },
 });

@@ -9,6 +9,17 @@ import {
 } from 'react-native';
 import CHORDS, { CATEGORIES } from '../data/chords';
 
+const COLORS = {
+  background: '#0F0F0F',
+  card: '#1A1A1A',
+  cardBorder: '#2A2A2A',
+  secondary: '#3D3D3D',
+  primary: '#DC143C',
+  text: '#F5F5F5',
+  textSecondary: '#999999',
+  textMuted: '#555555',
+};
+
 const CATEGORY_ICONS = {
   Major: '🎵',
   Minor: '🎶',
@@ -35,18 +46,14 @@ export default function ChordLibraryScreen({ navigate, goBack }) {
           <Text style={styles.subtitle}>Tap a chord to see the diagram</Text>
         </View>
 
-        {/* Category sections */}
         {CATEGORIES.map((category) => {
           const chords = CHORDS.filter((c) => c.category === category);
           return (
             <View key={category} style={styles.section}>
               <View style={styles.categoryHeader}>
-                <Text style={styles.categoryIcon}>
-                  {CATEGORY_ICONS[category]}
-                </Text>
+                <Text style={styles.categoryIcon}>{CATEGORY_ICONS[category]}</Text>
                 <Text style={styles.categoryTitle}>{category}</Text>
               </View>
-
               <View style={styles.grid}>
                 {chords.map((chord) => (
                   <TouchableOpacity
@@ -56,9 +63,7 @@ export default function ChordLibraryScreen({ navigate, goBack }) {
                     activeOpacity={0.7}
                   >
                     <Text style={styles.chordName}>{chord.name}</Text>
-                    <Text style={styles.chordNotes}>
-                      {chord.notes.join(' ')}
-                    </Text>
+                    <Text style={styles.chordNotes}>{chord.notes.join(' ')}</Text>
                   </TouchableOpacity>
                 ))}
               </View>
@@ -74,7 +79,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: '100%',
-    backgroundColor: '#0d0d1a',
+    backgroundColor: COLORS.background,
     alignSelf: 'center',
   },
   containerWide: {
@@ -94,19 +99,19 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   backText: {
-    color: '#f0e68c',
+    color: COLORS.primary,
     fontSize: 16,
     fontWeight: '600',
   },
   title: {
     fontSize: 26,
     fontWeight: '800',
-    color: '#f0e68c',
+    color: COLORS.text,
     textAlign: 'center',
   },
   subtitle: {
     fontSize: 13,
-    color: '#6666aa',
+    color: COLORS.textSecondary,
     marginTop: 4,
   },
   section: {
@@ -123,9 +128,9 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   categoryTitle: {
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: '700',
-    color: '#c0c0e0',
+    color: COLORS.text,
   },
   grid: {
     flexDirection: 'row',
@@ -133,23 +138,23 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   chordCard: {
-    backgroundColor: '#1a1a2e',
+    backgroundColor: COLORS.card,
     borderRadius: 12,
     paddingVertical: 12,
     paddingHorizontal: 16,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#2a2a4a',
+    borderColor: COLORS.cardBorder,
     minWidth: 70,
   },
   chordName: {
     fontSize: 20,
     fontWeight: '800',
-    color: '#f0e68c',
+    color: COLORS.primary,
     marginBottom: 2,
   },
   chordNotes: {
     fontSize: 10,
-    color: '#6666aa',
+    color: COLORS.textMuted,
   },
 });
