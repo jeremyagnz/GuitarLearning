@@ -1,57 +1,54 @@
-import React, { useState } from 'react';
-import {
-  SafeAreaView,
-  View,
-  Text,
-  StyleSheet,
-  useWindowDimensions,
-} from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { SafeAreaView, StyleSheet } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 
-import CHORDS from './src/data/chords';
-import ChordDiagram from './src/components/ChordDiagram';
-import ChordSelector from './src/components/ChordSelector';
+import HomeScreen from './src/screens/HomeScreen';
+import NotesExplorerScreen from './src/screens/NotesExplorerScreen';
+import ChordLibraryScreen from './src/screens/ChordLibraryScreen';
+import ChordDetailScreen from './src/screens/ChordDetailScreen';
+import FretboardScreen from './src/screens/FretboardScreen';
+import PracticeModeScreen from './src/screens/PracticeModeScreen';
 
+/**
+ * Simple stack-based navigator implemented with React state.
+ * Each entry: { screen: string, params: object }
+ */
 export default function App() {
-  const [selectedChord, setSelectedChord] = useState(CHORDS[0]);
-  const { width } = useWindowDimensions();
+  const [stack, setStack] = useState([{ screen: 'Home', params: {} }]);
 
-  // Responsive: center and cap width on wide screens
-  const isWide = width >= 600;
+  const navigate = useCallback((screen, params = {}) => {
+    setStack((prev) => [...prev, { screen, params }]);
+  }, []);
+
+  const goBack = useCallback(() => {
+    setStack((prev) => (prev.length > 1 ? prev.slice(0, -1) : prev));
+  }, []);
+
+  const { screen, params } = stack[stack.length - 1];
+
+  const renderScreen = () => {
+    switch (screen) {
+      case 'Home':
+        return <HomeScreen navigate={navigate} />;
+      case 'NotesExplorer':
+        return <NotesExplorerScreen goBack={goBack} />;
+      case 'ChordLibrary':
+        return <ChordLibraryScreen navigate={navigate} goBack={goBack} />;
+      case 'ChordDetail':
+        return <ChordDetailScreen chord={params.chord} goBack={goBack} />;
+      case 'Fretboard':
+        return <FretboardScreen goBack={goBack} />;
+      case 'PracticeMode':
+        return <PracticeModeScreen goBack={goBack} />;
+      default:
+        return <HomeScreen navigate={navigate} />;
+    }
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar style="light" />
-
-      <View style={[styles.container, isWide && styles.containerWide]}>
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.title}>🎸 Guitar Chords</Text>
-          <Text style={styles.subtitle}>Tap a chord to see the diagram</Text>
-        </View>
-
-        {/* Chord selector */}
-        <ChordSelector
-          chords={CHORDS}
-          selectedChord={selectedChord}
-          onSelect={setSelectedChord}
-        />
-
-        {/* Divider */}
-        <View style={styles.divider} />
-
-        {/* Chord diagram */}
-        <View style={styles.diagramContainer}>
-          <ChordDiagram chord={selectedChord} />
-        </View>
-
-        {/* Finger tip */}
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>
-            {'✕ = muted string\u00A0\u00A0\u00A0○ = open string'}
-          </Text>
-        </View>
-      </View>
+      {renderScreen()}
     </SafeAreaView>
   );
 }
@@ -59,51 +56,7 @@ export default function App() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#1a1a2e',
+    backgroundColor: '#0d0d1a',
     alignItems: 'center',
-  },
-  container: {
-    flex: 1,
-    width: '100%',
-    backgroundColor: '#1a1a2e',
-  },
-  containerWide: {
-    maxWidth: 480,
-  },
-  header: {
-    paddingTop: 24,
-    paddingBottom: 16,
-    paddingHorizontal: 20,
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: '800',
-    color: '#f0e68c',
-    letterSpacing: 1,
-  },
-  subtitle: {
-    fontSize: 14,
-    color: '#aaa',
-    marginTop: 4,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: '#2a2a4a',
-    marginHorizontal: 20,
-    marginVertical: 8,
-  },
-  diagramContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  footer: {
-    paddingBottom: 16,
-    alignItems: 'center',
-  },
-  footerText: {
-    fontSize: 12,
-    color: '#666',
   },
 });
