@@ -21,6 +21,12 @@ const COLORS = {
 
 const CARDS = [
   {
+    screen: 'Learning',
+    icon: '🎓',
+    title: 'Aprendizaje',
+    subtitle: 'Lecciones paso a paso para aprender guitarra',
+  },
+  {
     screen: 'BeginnerLesson',
     icon: '📚',
     title: 'Lecciones para Principiantes',
