@@ -330,6 +330,175 @@ const csStyles = StyleSheet.create({
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
+// 3b. NOTES ON GUITAR ILLUSTRATION  (single-note diagrams for 7 natural notes)
+// ─────────────────────────────────────────────────────────────────────────────
+const NC = 11;        // cell px for mini note diagram
+const N_FRETS = 4;
+const N_STRINGS = 6;
+const N_BW = (N_STRINGS - 1) * NC;   // board width  = 55
+const N_BH = N_FRETS * NC;            // board height = 44
+
+// stringIdx: 0 = low E (6th string) → 5 = high e (1st string)
+const NOTE_GUITAR_POSITIONS = [
+  { note: 'C', solfege: 'Do',  stringIdx: 1, fret: 3, color: C.red    },
+  { note: 'D', solfege: 'Re',  stringIdx: 2, fret: 0, color: C.orange },
+  { note: 'E', solfege: 'Mi',  stringIdx: 0, fret: 0, color: C.purple },
+  { note: 'F', solfege: 'Fa',  stringIdx: 0, fret: 1, color: C.blue   },
+  { note: 'G', solfege: 'Sol', stringIdx: 3, fret: 0, color: C.green  },
+  { note: 'A', solfege: 'La',  stringIdx: 1, fret: 0, color: C.gold   },
+  { note: 'B', solfege: 'Si',  stringIdx: 4, fret: 0, color: '#00BFFF'},
+];
+
+const STRING_LABELS_NOTES = ['E', 'A', 'D', 'G', 'B', 'e'];
+
+function SingleNoteDiagram({ noteData }) {
+  const { note, solfege, stringIdx, fret, color } = noteData;
+  const isOpen = fret === 0;
+
+  return (
+    <View style={[ndStyles.card, { borderColor: color + '55' }]}>
+      {/* Note name + solfège */}
+      <Text style={[ndStyles.noteName, { color }]}>{note}</Text>
+      <Text style={ndStyles.solfegeName}>{solfege}</Text>
+
+      {/* Nut */}
+      <View style={[ndStyles.nut, { backgroundColor: color }]} />
+
+      {/* Open-string indicator row */}
+      <View style={ndStyles.openRow}>
+        {Array.from({ length: N_STRINGS }).map((_, si) => (
+          <View key={si} style={ndStyles.openCell}>
+            {isOpen && si === stringIdx && (
+              <Text style={[ndStyles.openCircle, { color }]}>○</Text>
+            )}
+          </View>
+        ))}
+      </View>
+
+      {/* Fretboard */}
+      <View style={ndStyles.board}>
+        {/* String lines */}
+        {Array.from({ length: N_STRINGS }).map((_, si) => (
+          <View
+            key={`s${si}`}
+            style={[
+              ndStyles.stringLine,
+              { left: `${(si / (N_STRINGS - 1)) * 100}%` },
+              si === stringIdx && { backgroundColor: color, width: 3 },
+            ]}
+          />
+        ))}
+        {/* Fret lines */}
+        {Array.from({ length: N_FRETS + 1 }).map((_, fi) => (
+          <View
+            key={`f${fi}`}
+            style={[ndStyles.fretLine, { top: `${(fi / N_FRETS) * 100}%` }]}
+          />
+        ))}
+        {/* Finger dot (fretted notes only) */}
+        {!isOpen && (
+          <View
+            style={[ndStyles.dot, {
+              top: `${((fret - 0.5) / N_FRETS) * 100}%`,
+              left: `${(stringIdx / (N_STRINGS - 1)) * 100}%`,
+              backgroundColor: color,
+            }]}
+          />
+        )}
+      </View>
+
+      {/* String labels */}
+      <View style={ndStyles.labelRow}>
+        {STRING_LABELS_NOTES.map((l, i) => (
+          <View key={i} style={ndStyles.labelCell}>
+            <Text style={[
+              ndStyles.stringLabel,
+              i === stringIdx && { color, fontWeight: '700' },
+            ]}>
+              {l}
+            </Text>
+          </View>
+        ))}
+      </View>
+
+      {/* Fret tag */}
+      <View style={[
+        ndStyles.fretTag,
+        { borderColor: color, backgroundColor: color + '22' },
+      ]}>
+        <Text style={[ndStyles.fretTagText, { color }]}>
+          {isOpen ? 'al aire' : `traste ${fret}`}
+        </Text>
+      </View>
+    </View>
+  );
+}
+
+function NotesOnGuitarIllustration() {
+  const row1 = NOTE_GUITAR_POSITIONS.slice(0, 4);  // C D E F
+  const row2 = NOTE_GUITAR_POSITIONS.slice(4);      // G A B
+
+  return (
+    <IllustrationWrapper title="🎸 Las 7 Notas en la Guitarra">
+      <View style={ndStyles.gridRow}>
+        {row1.map((nd) => <SingleNoteDiagram key={nd.note} noteData={nd} />)}
+      </View>
+      <View style={[ndStyles.gridRow, ndStyles.centeredRow]}>
+        {row2.map((nd) => <SingleNoteDiagram key={nd.note} noteData={nd} />)}
+      </View>
+      <View style={ndStyles.tipBox}>
+        <Text style={ndStyles.tipText}>
+          💡 Cada nota puede tocarse en múltiples posiciones del diapasón.
+          Aquí se muestra la posición más común en primera posición.
+        </Text>
+      </View>
+    </IllustrationWrapper>
+  );
+}
+
+const ndStyles = StyleSheet.create({
+  gridRow:     { flexDirection: 'row', gap: 4, marginBottom: 6 },
+  centeredRow: { justifyContent: 'center' },
+  card: {
+    flex: 1, maxWidth: 78, alignItems: 'center',
+    paddingTop: 8, paddingBottom: 6, paddingHorizontal: 3,
+    backgroundColor: '#141414', borderRadius: 8, borderWidth: 1,
+  },
+  noteName:    { fontSize: 18, fontWeight: '900' },
+  solfegeName: { fontSize: 9, color: C.muted, marginBottom: 4 },
+  nut:         { width: N_BW + 4, height: 4, borderRadius: 2 },
+  openRow:     {
+    flexDirection: 'row', width: N_BW + 4, justifyContent: 'space-between',
+    marginTop: 3, marginBottom: 2, height: 13,
+  },
+  openCell:    { width: NC, alignItems: 'center' },
+  openCircle:  { fontSize: 10, fontWeight: '700', lineHeight: 13 },
+  board:       { width: N_BW, height: N_BH, position: 'relative', marginHorizontal: 2 },
+  stringLine:  {
+    position: 'absolute', top: 0, bottom: 0, width: 1.5,
+    backgroundColor: '#3A3A3A', transform: [{ translateX: -0.75 }],
+  },
+  fretLine:    { position: 'absolute', left: 0, right: 0, height: 1, backgroundColor: '#2A2A2A' },
+  dot: {
+    position: 'absolute', width: 14, height: 14, borderRadius: 7,
+    transform: [{ translateX: -7 }, { translateY: -7 }],
+  },
+  labelRow:    { flexDirection: 'row', width: N_BW + 4, justifyContent: 'space-between', marginTop: 3 },
+  labelCell:   { width: NC, alignItems: 'center' },
+  stringLabel: { fontSize: 7, color: '#3A3A3A' },
+  fretTag:     {
+    marginTop: 5, borderRadius: 6,
+    paddingHorizontal: 5, paddingVertical: 2, borderWidth: 1,
+  },
+  fretTagText: { fontSize: 8, fontWeight: '700' },
+  tipBox:      {
+    marginTop: 4, backgroundColor: '#1A1A1A', borderRadius: 8,
+    padding: 8, borderWidth: 1, borderColor: '#2A2A2A',
+  },
+  tipText:     { fontSize: 10, color: C.muted, lineHeight: 15, textAlign: 'center' },
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
 // 4. COMPACT CHORD DIAGRAM (mini, fits two side by side)
 // ─────────────────────────────────────────────────────────────────────────────
 const MINI = 22;
@@ -832,7 +1001,13 @@ export default function LessonIllustration({ lessonId }) {
     case 'tuning':
       return <StringTuningIllustration />;
     case 'music-notes':
-      return <ChromaticScaleIllustration />;
+      return (
+        <>
+          <NotesOnGuitarIllustration />
+          <View style={{ height: 10 }} />
+          <ChromaticScaleIllustration />
+        </>
+      );
     case 'first-chords-em-am':
       return <ChordDiagramPair chordNames={['Em', 'Am']} />;
     case 'chords-e-a':
