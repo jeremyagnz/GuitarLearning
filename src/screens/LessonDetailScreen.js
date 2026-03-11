@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   useWindowDimensions,
 } from 'react-native';
+import LessonIllustration from '../components/GuitarIllustrations';
 
 const COLORS = {
   background: '#0F0F0F',
@@ -85,6 +86,11 @@ export default function LessonDetailScreen({ lesson, goBack }) {
               <Text style={styles.keyPointText}>{point}</Text>
             </View>
           ))}
+        </View>
+
+        {/* Illustration */}
+        <View style={styles.illustrationContainer}>
+          <LessonIllustration lessonId={lesson.id} />
         </View>
 
         {/* Content sections */}
@@ -214,6 +220,12 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: COLORS.textSecondary,
     fontWeight: '600',
+  },
+
+  /* Illustration */
+  illustrationContainer: {
+    paddingHorizontal: 20,
+    marginBottom: 20,
   },
 
   /* Key points */
