@@ -1,6 +1,7 @@
 import { Platform } from 'react-native';
 
 let audioContext = null;
+let activeOscillators = [];
 
 const getAudioContext = () => {
   if (Platform.OS !== 'web') return null;
@@ -47,11 +48,32 @@ export const playNote = (frequency, duration = 1.5) => {
     gain.gain.linearRampToValueAtTime(0.25, ctx.currentTime + 0.01);
     gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
 
+    activeOscillators.push(osc);
+    osc.onended = () => {
+      activeOscillators = activeOscillators.filter((n) => n !== osc);
+    };
+
     osc.start(ctx.currentTime);
     osc.stop(ctx.currentTime + duration);
   } catch {
     // Audio unavailable – fail silently
   }
+};
+
+/**
+ * Immediately stop all currently playing notes.
+ * Useful for implementing a pause/stop feature in song playback.
+ */
+export const stopAllNotes = () => {
+  if (Platform.OS !== 'web') return;
+  activeOscillators.forEach((osc) => {
+    try {
+      osc.stop();
+    } catch {
+      // Already stopped – ignore
+    }
+  });
+  activeOscillators = [];
 };
 
 /**
