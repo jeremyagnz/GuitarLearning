@@ -57,6 +57,12 @@ const CARDS = [
     subtitle: 'Entrenamiento de acordes',
   },
   {
+    screen: 'Songs',
+    icon: '🎵',
+    title: 'Canciones',
+    subtitle: 'De básico a avanzado — tablatura y audio',
+  },
+  {
     screen: 'PitchDetector',
     icon: '🎤',
     title: 'Pitch Detector',

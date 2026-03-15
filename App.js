@@ -12,6 +12,8 @@ import PitchDetectorScreen from './src/screens/PitchDetectorScreen';
 import BeginnerLessonScreen from './src/screens/BeginnerLessonScreen';
 import LearningScreen from './src/screens/LearningScreen';
 import LessonDetailScreen from './src/screens/LessonDetailScreen';
+import SongsScreen from './src/screens/SongsScreen';
+import SongDetailScreen from './src/screens/SongDetailScreen';
 
 /**
  * Simple stack-based navigator implemented with React state.
@@ -52,6 +54,10 @@ export default function App() {
         return <LessonDetailScreen lesson={params.lesson} goBack={goBack} />;
       case 'PitchDetector':
         return <PitchDetectorScreen goBack={goBack} />;
+      case 'Songs':
+        return <SongsScreen navigate={navigate} goBack={goBack} />;
+      case 'SongDetail':
+        return <SongDetailScreen song={params.song} goBack={goBack} />;
       default:
         return <HomeScreen navigate={navigate} />;
     }
